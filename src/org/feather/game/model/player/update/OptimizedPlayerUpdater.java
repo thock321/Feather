@@ -1,8 +1,8 @@
 package org.feather.game.model.player.update;
 
-public class OptimizedPlayerUpdater implements PlayerUpdater {
+public class OptimizedPlayerUpdater implements Updater {
 	
-	private PlayerUpdater updater;
+	private Updater updater;
 	
 	public OptimizedPlayerUpdater() {
 		final int cores = Runtime.getRuntime().availableProcessors();

@@ -11,7 +11,7 @@ import org.feather.game.model.player.Player;
  * @author Thock321
  *
  */
-public class DefaultPlayerUpdater implements PlayerUpdater {
+public class DefaultPlayerUpdater implements Updater {
 
 	@Override
 	public void update() {

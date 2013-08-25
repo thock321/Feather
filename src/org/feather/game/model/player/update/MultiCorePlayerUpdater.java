@@ -14,7 +14,7 @@ import org.feather.game.model.player.Player;
  * @author Thock321
  *
  */
-public class MultiCorePlayerUpdater implements PlayerUpdater {
+public class MultiCorePlayerUpdater implements Updater {
 	
 	private ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), new LabelledThreadFactory("PlayerUpdateThread"));
 	

@@ -26,15 +26,16 @@ public class PlayerUpdateTask extends UpdateTask {
         GamePacketCreator gamePacket, updateBlock = new GamePacketCreator();
         gamePacket = new GamePacketCreator(81, PacketType.VARIABLE_SHORT);
         gamePacket.startBitAccess();
-        updatePlayerMovement(player, gamePacket);
-        updatePlayer(player, player, updateBlock, false, false);
+        updatePlayerMovement(player, gamePacket, false);
+        updatePlayer(player, updateBlock, false, false);
         final List<Player> localPlayers = player.getLocalPlayers();
         gamePacket.writeBits(8, localPlayers.size());
         for (Player localPlayer : localPlayers) {
             if (localPlayer != null && GameWorld.getWorld().loggedIn(localPlayer) && !localPlayer.teleporting() && player.getLocation().isWithinDistance(localPlayer.getLocation()) &&
                     localPlayer.isActive()) {
+                updatePlayerMovement(localPlayer, gamePacket, true);
                 if (localPlayer.getUpdateFlags().updateNeeded()) {
-                    updatePlayer(player, localPlayer, updateBlock, false, true);
+                    updatePlayer(localPlayer, updateBlock, false, true);
                 }
             } else {
                 player.getLocalPlayers().remove(localPlayer);
@@ -49,7 +50,7 @@ public class PlayerUpdateTask extends UpdateTask {
                 continue;
             player.getLocalPlayers().add(otherPlayer);
             addPlayer(player, otherPlayer, gamePacket);
-            updatePlayer(player, otherPlayer, updateBlock, true, true);
+            updatePlayer(otherPlayer, updateBlock, true, true);
         }
         if (!updateBlock.empty()) {
             gamePacket.writeBits(11, 2047);
@@ -73,16 +74,8 @@ public class PlayerUpdateTask extends UpdateTask {
         otherPlayer.getUpdateFlags().setUpdateNeeded(UpdateFlags.UpdateFlag.APPEARANCE);
     }
 
-    private void updatePlayerMovement(Player toUpdate, GamePacketCreator packet) {
-        if (toUpdate.teleporting() || toUpdate.mapRegionChanged()) {
-            packet.writeBits(1, 1);
-            packet.writeBits(2, 3);
-            packet.writeBits(2, toUpdate.getLocation().getH());
-            packet.writeBits(1, toUpdate.teleporting() ? 1 : 0);
-            packet.writeBits(1, toUpdate.getUpdateFlags().updateNeeded() ? 1 : 0);
-            packet.writeBits(7, toUpdate.getPreviousLocation().getLocalY());
-            packet.writeBits(7, toUpdate.getPreviousLocation().getLocalX());
-        } else {
+    private void updatePlayerMovement(Player toUpdate, GamePacketCreator packet, boolean otherPlayer) {
+        if (otherPlayer) {
             if (player.getMovementQueue().getWalkDirection() == -1) {
                 if (player.getUpdateFlags().updateNeeded()) {
                     packet.writeBits(1, 1);
@@ -96,15 +89,44 @@ public class PlayerUpdateTask extends UpdateTask {
                 packet.writeBits(1, player.getUpdateFlags().updateNeeded() ? 1 : 0);
             } else {
                 packet.writeBits(1, 1);
-                packet.writeBits(2, 1);
+                packet.writeBits(2, 2);
                 packet.writeBits(3, player.getMovementQueue().getWalkDirection());
                 packet.writeBits(3, player.getMovementQueue().getRunDirection());
                 packet.writeBits(1, player.getUpdateFlags().updateNeeded() ? 1 : 0);
             }
+        } else {
+            if (toUpdate.teleporting() || toUpdate.mapRegionChanged()) {
+                packet.writeBits(1, 1);
+                packet.writeBits(2, 3);
+                packet.writeBits(2, toUpdate.getLocation().getH());
+                packet.writeBits(1, toUpdate.teleporting() ? 1 : 0);
+                packet.writeBits(1, toUpdate.getUpdateFlags().updateNeeded() ? 1 : 0);
+                packet.writeBits(7, toUpdate.getPreviousLocation().getLocalY());
+                packet.writeBits(7, toUpdate.getPreviousLocation().getLocalX());
+            } else {
+                if (player.getMovementQueue().getWalkDirection() == -1) {
+                    if (player.getUpdateFlags().updateNeeded()) {
+                        packet.writeBits(1, 1);
+                        packet.writeBits(2, 0);
+                    } else
+                        packet.writeBits(1, 0);
+                } else if (player.getMovementQueue().getRunDirection() == -1) {
+                    packet.writeBits(1, 1);
+                    packet.writeBits(2, 1);
+                    packet.writeBits(3, player.getMovementQueue().getWalkDirection());
+                    packet.writeBits(1, player.getUpdateFlags().updateNeeded() ? 1 : 0);
+                } else {
+                    packet.writeBits(1, 1);
+                    packet.writeBits(2, 1);
+                    packet.writeBits(3, player.getMovementQueue().getWalkDirection());
+                    packet.writeBits(3, player.getMovementQueue().getRunDirection());
+                    packet.writeBits(1, player.getUpdateFlags().updateNeeded() ? 1 : 0);
+                }
+            }
         }
     }
 
-    private void updatePlayer(Player player, Player otherPlayer, GamePacketCreator gamePacket, boolean forcedAppearanceUpdate, boolean chatUpdate) {
+    private void updatePlayer(Player player, GamePacketCreator gamePacket, boolean forcedAppearanceUpdate, boolean chatUpdate) {
         //TODO
     }
 
