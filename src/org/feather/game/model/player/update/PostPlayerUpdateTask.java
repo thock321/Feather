@@ -17,8 +17,7 @@ public class PostPlayerUpdateTask extends UpdateTask {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
+		player.getUpdateFlags().clear();
 	}
 
 }

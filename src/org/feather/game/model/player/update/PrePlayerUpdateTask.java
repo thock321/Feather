@@ -17,6 +17,9 @@ public class PrePlayerUpdateTask extends UpdateTask {
 
 	@Override
 	public void run() {
+        if (player.mapRegionChanged()) {
+            player.getPacketSender().sendMapRegion();
+        }
 		player.getMovementQueue().processMovement();
 		player.process();
 	}

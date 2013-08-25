@@ -1,6 +1,7 @@
 package org.feather.event;
 
 import org.feather.Server;
+import org.feather.game.GameWorld;
 
 /**
  * A single event.
@@ -31,7 +32,7 @@ public abstract class Event {
 	public Event(int delay) {
 		this.delay = delay;
 		this.active = true;
-		this.owner = Server.class;
+		this.owner = GameWorld.getWorld();
 	}
 	
 	public Event(int delay, Object owner) {

@@ -7,6 +7,7 @@ import org.feather.event.Event;
 import org.feather.event.EventHandler;
 import org.feather.game.listeners.Listener;
 import org.feather.game.listeners.PlayerListener;
+import org.feather.game.model.region.RegionHandler;
 import org.feather.threads.MassSaveThread;
 import org.feather.tick.TickUnit;
 import org.feather.game.model.ActiveEntity;
@@ -21,7 +22,7 @@ import org.feather.game.model.shop.ShopHandler;
 
 
 /**
- * Represents a game world, and for getting game worlds.
+ * Represents a game world.
  * @author Albert's_Computer
  *
  */
@@ -48,6 +49,12 @@ public class GameWorld {
 	private ShopHandler shopHandler = new ShopHandler();
 	
 	private TradeHandler tradeHandler = new TradeHandler();
+
+    private RegionHandler regionHandler = new RegionHandler();
+
+    public RegionHandler getRegionHandler() {
+        return regionHandler;
+    }
 	
 	public TradeHandler getTradeHandler() {
 		return tradeHandler;
