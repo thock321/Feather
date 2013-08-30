@@ -126,8 +126,16 @@ public class PlayerUpdateTask extends UpdateTask {
         }
     }
 
-    private void updatePlayer(Player player, GamePacketCreator gamePacket, boolean forcedAppearanceUpdate, boolean chatUpdate) {
-        //TODO
+    private void updatePlayer(Player player, GamePacketCreator gamePacket, boolean forcedAppearanceUpdate, boolean noChatUpdate) {
+        if (!player.getUpdateFlags().updateNeeded() && !forcedAppearanceUpdate)
+            return;
+        int updateMask = 0;
+        if (player.getUpdateFlags().getUpdateNeeded(UpdateFlags.UpdateFlag.GRAPHICS) && player.getCurrentGraphic() != null)
+            updateMask |= 0x100;
+        if (player.getUpdateFlags().getUpdateNeeded(UpdateFlags.UpdateFlag.ANIMATION) && player.getCurrentAnim() != null)
+            updateMask |= 0x8;
+        if (player.getUpdateFlags().getUpdateNeeded(UpdateFlags.UpdateFlag.FORCED_CHAT) && (player.getForcedChatMessage() != null || player.getForcedChatMessage() != ""))
+            updateMask |= 0x4;
     }
 
 }

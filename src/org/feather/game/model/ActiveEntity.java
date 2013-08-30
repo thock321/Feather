@@ -38,6 +38,16 @@ public abstract class ActiveEntity extends Entity {
 	private Animation currentAnim;
 	
 	private Graphic currentGraphic;
+
+    private String forcedChatMessage;
+
+    public String getForcedChatMessage() {
+        return forcedChatMessage;
+    }
+
+    public void setForcedChatMessage(String forcedChatMessage) {
+        this.forcedChatMessage = forcedChatMessage;
+    }
 	
 	public abstract void process();
 	
